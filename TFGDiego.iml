@@ -15,6 +15,7 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../postgresql-9.4.1207.jre6.jar!/" />
+          <root url="jar://$USER_HOME$/Downloads/postgresql-9.4.1207.jre6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

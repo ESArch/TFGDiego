@@ -5,6 +5,9 @@
       <root url="jar://$MAVEN_REPOSITORY$/com/sachinhandiekar/jInstagram/1.0.3/jInstagram-1.0.3.jar!/" />
       <root url="jar://$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.2.2/gson-2.2.2.jar!/" />
       <root url="jar://$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.1/commons-lang3-3.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/sachinhandiekar/jInstagram/1.0.3/jInstagram-1.0.3.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.2.2/gson-2.2.2.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.1/commons-lang3-3.1.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

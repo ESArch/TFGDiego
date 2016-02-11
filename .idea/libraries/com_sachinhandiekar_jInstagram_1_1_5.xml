@@ -7,6 +7,11 @@
       <root url="jar://$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.1/commons-lang3-3.1.jar!/" />
       <root url="jar://$MAVEN_REPOSITORY$/commons-codec/commons-codec/1.8/commons-codec-1.8.jar!/" />
       <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.5/slf4j-api-1.7.5.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/sachinhandiekar/jInstagram/1.1.5/jInstagram-1.1.5.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.2.2/gson-2.2.2.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.1/commons-lang3-3.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/commons-codec/commons-codec/1.8/commons-codec-1.8.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.5/slf4j-api-1.7.5.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

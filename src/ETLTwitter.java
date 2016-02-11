@@ -9,7 +9,6 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.sql.*;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +16,7 @@ import java.util.List;
 /**
  * Created by Arch on 2/4/2016.
  */
-public class ExtractorTwitter {
+public class ETLTwitter {
 
 
 
@@ -103,7 +102,7 @@ public class ExtractorTwitter {
         //reader.beginObject();
         while (reader.hasNext() && i < 20) {
             messages.add(readMessage(reader));
-            //i++;
+//            i++;
             //break;
         }
         //reader.endObject();
@@ -143,7 +142,8 @@ public class ExtractorTwitter {
 
         }
 
-        insertToDB(tweet);
+        DBLoader.connect();
+        DBLoader.insertToDB(tweet);
         reader.endObject();
         return tweet;
     }
@@ -213,125 +213,5 @@ public class ExtractorTwitter {
             }
         }
         reader.endObject();
-    }
-
-    public static Connection getConnection(){
-        Connection connection = null;
-
-        try {
-            Class.forName("org.postgresql.Driver");
-            connection = DriverManager
-                    .getConnection("jdbc:postgresql://localhost:5432/postgis_22_sample",
-                            "postgres", "postgres");
-            connection.setAutoCommit(true);
-            System.out.println("Opened database succesfully");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-
-        return connection;
-    }
-
-    public static void insertToDB(Tweet tweet) {
-
-        Connection connection = getConnection();
-
-        insertUser(connection, tweet);
-
-        insertTweet(connection, tweet);
-
-        insertHashTags(connection, tweet);
-        try {
-            connection.close();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
-
-
-    }
-
-    public static void insertUser(Connection connection, Tweet tweet){
-        Statement statement = null;
-        String sql = "";
-
-        try {
-            statement = connection.createStatement();
-
-            //Insert usuario
-            sql = "INSERT INTO usuario (usu_id, usu_idioma)"
-                    + "VALUES ('" + tweet.user.id + "','" + tweet.user.lang + "');";
-            statement.executeUpdate(sql);
-            statement.close();
-//            connection.commit();
-
-        } catch (SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.err.println(sql);
-        }
-    }
-
-    public static void insertTweet(Connection connection, Tweet tweet){
-        Statement statement = null;
-        String sql = "";
-
-        try {
-            statement = connection.createStatement();
-
-            //Insert tweet
-            sql = "INSERT INTO tweet (twe_id, twe_texto, twe_usuario, twe_coordenadas, twe_fecha_creacion, twe_hora_creacion)"
-                    + "VALUES ('" + tweet.id + "','" + tweet.text + "','" + tweet.user.id + "',ST_GeomFromText('POINT(" +tweet.latitude + " " +tweet.longitude + ")', 4326), '" + tweet.getDate() + "', '" + tweet.getTime() +"');";
-            statement.executeUpdate(sql);
-            statement.close();
-//            connection.commit();
-
-        } catch (SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.err.println(sql);
-        }
-    }
-
-    public static void insertHashTags(Connection connection, Tweet tweet){
-        Statement statement = null;
-        String sql = "";
-
-        for(String hashTag : tweet.hashTags){
-            //Insertar hashTag
-            try {
-                statement = connection.createStatement();
-
-                sql = "INSERT INTO hashtag (has_etiqueta)"
-                        + "VALUES ('" + hashTag +"');";
-                statement.executeUpdate(sql);
-                statement.close();
-//                connection.commit();
-
-            } catch (SQLException e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                System.err.println(sql);
-            }
-
-            //Obtener id del hashTag insertado
-            try {
-                statement = connection.createStatement();
-
-                sql = "SELECT has_codigo FROM hashtag WHERE has_etiqueta ='" + hashTag + "';";
-                ResultSet rs = statement.executeQuery(sql);
-
-                if(rs.next()){
-                    sql = "INSERT INTO tweet_hashtag(twe_id, has_codigo)"
-                            + "VALUES ('" + tweet.id + "','" + rs.getString("has_codigo") + "');";
-                    statement.executeUpdate(sql);
-                    statement.close();
-//                    connection.commit();
-                } else
-                    statement.close();
-
-            } catch (SQLException e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                System.err.println(sql);
-            }
-        }
-
     }
 }
