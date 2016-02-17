@@ -27,7 +27,8 @@ public class PruebaGoogle {
 //        }
 
 
-        getJson();
+//        getJson();
+        searchByCoordenates();
 
 
 
@@ -39,7 +40,7 @@ public class PruebaGoogle {
         double latitude = 39.4561165;
         double longitude = -0.3545661;
 
-        ArrayList<Place> places = PlacesService.search("", latitude, longitude, 5000);
+        ArrayList<Place> places = PlacesService.search("Rumbo 144", latitude, longitude, 5000);
         for(Place place : places){
             System.out.printf("Name: %s, types: %s, latitude %f, longitude %f\n", place.name, place.types, place.latitude, place.longitude);
         }

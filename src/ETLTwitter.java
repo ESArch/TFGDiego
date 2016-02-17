@@ -1,14 +1,8 @@
 import com.google.gson.stream.JsonReader;
-import net.maritimecloud.internal.core.javax.json.Json;
-import net.maritimecloud.internal.core.javax.json.stream.JsonParser;
-import net.maritimecloud.internal.core.javax.json.stream.JsonParser.Event;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import com.google.gson.stream.JsonToken;
 
 
 import java.io.*;
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,64 +15,7 @@ public class ETLTwitter {
 
 
     public static void main(String[] args) throws Exception {
-//        JSONObject jsonObject = parsearJSON("tuitsValencia.json");
         procesarGSON("valencia.json");
-//        System.out.println(noGeo);
-    }
-
-
-    public static JSONObject parsearJSON(String fileName) throws IOException{
-
-        File file = new File(fileName);
-
-        int len;
-        char[] chr = new char[4096];
-        final StringBuilder json = new StringBuilder();
-        final FileReader reader = new FileReader(file);
-
-
-        //Read the json file
-        try {
-            while ((len = reader.read(chr)) > 0) {
-                json.append(chr, 0, len);
-            }
-        }finally {
-            reader.close();
-        }
-
-
-        //Build a JSONObject from the file
-        JSONObject jsonObject = null;
-        try{
-            jsonObject = new JSONObject(json.toString());
-        }
-        catch (JSONException e){
-            System.out.println("Error processing JSON results" + e);
-        }
-
-        return jsonObject;
-    }
-
-    public static void procesarJSON(String fileName){
-        int noGeolocalizados = 0;
-
-        try (InputStream is = new FileInputStream(fileName);
-             JsonParser parser = Json.createParser(is)) {
-
-            while (parser.hasNext()) {
-                Event event = parser.next();
-
-                if(event == Event.KEY_NAME){
-                    if(parser.getString().equals("text")){
-                        parser.next();
-                        System.out.println(parser.getString());
-                    }
-
-                }
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
     }
 
     public static void procesarGSON(String fileName) throws IOException{
@@ -89,27 +26,24 @@ public class ETLTwitter {
         JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
         reader.setLenient(true);
         try {
-            return readMessagesArray(reader);
+            return readTweetsArray(reader);
         } finally {
             reader.close();
         }
     }
 
-    public static List<Tweet> readMessagesArray(JsonReader reader) throws IOException {
+    public static List<Tweet> readTweetsArray(JsonReader reader) throws IOException {
         List<Tweet> messages = new ArrayList<Tweet>();
 
         int i = 0;
-        //reader.beginObject();
         while (reader.hasNext() && i < 20) {
-            messages.add(readMessage(reader));
+            messages.add(readTweet(reader));
 //            i++;
-            //break;
         }
-        //reader.endObject();
         return messages;
     }
 
-    public static Tweet readMessage(JsonReader reader) throws IOException {
+    public static Tweet readTweet(JsonReader reader) throws IOException {
         Tweet tweet = new Tweet();
 
         reader.beginObject();
@@ -136,6 +70,11 @@ public class ETLTwitter {
                 long createdAt = reader.nextLong();
                 tweet.timestamp = createdAt;
                 reader.endObject();
+            }else if (name.equals("lang")) {
+                if(reader.peek() != JsonToken.NULL)
+                    tweet.lang = reader.nextString();
+                else
+                    tweet.lang = "und";
             } else {
                 reader.skipValue();
             }

@@ -24,8 +24,27 @@ public class PlacesService {
 
     private static final String OUT_JSON = "/json";
 
-    // KEY!
-    private static final String API_KEY = "AIzaSyDwnYqIM4r8BJ0iXYYCWdAwtS_laXMRM38";
+    // KEY TFGDiego
+  private static final String API_KEY = "AIzaSyDwnYqIM4r8BJ0iXYYCWdAwtS_laXMRM38";
+    // KEY TFGDiego 2
+//    private static final String API_KEY = "AIzaSyB0MJiB8oSOJZSwgAYIelhLzf8grvcZDBI";
+    // KEY TFGDiego 3
+//    private static final String API_KEY = "AIzaSyAG_UeWcd0gs0x6yfEHrBMlMtsMAPNiZYI";
+    // KEY TFGDiego 4
+//    private static final String API_KEY = "AIzaSyDT4Zuo42oTn61TqsuTTVxZXXD1CqVhKlU";
+    // KEY TFGDiego 5
+//    private static final String API_KEY = "AIzaSyASLxaQalnk-aHtC6YS0_xAKFwbE9Xv-VM";
+    // KEY TFGDiego 6
+//    private static final String API_KEY = "AIzaSyC0JdK_ZvFzqO8FT7T2P9ZYF-RmQZ-1DQs";
+    // KEY TFGDiego 7
+//    private static final String API_KEY = "AIzaSyDO2m62Zu9i7TZC2gDDzY2PPI-NYdq9fSg";
+    // KEY TFGDiego 8
+//    private static final String API_KEY = "AIzaSyBjFfOSaD8oD1xwWNYxG65meRLz36y7_74";
+    // KEY TFGDiego 9
+//    private static final String API_KEY = "AIzaSyAnHGQP9_giFPes2arPbjWMuMTlw1dHuXc";
+    // KEY TFGDiego 10
+//    private static final String API_KEY = "AIzaSyDr94a5pt5VsiKIdg2cYYlqssidWcIrdIo";
+
 
     public static ArrayList<Place> autocomplete(String input) {
         ArrayList<Place> resultList = null;
