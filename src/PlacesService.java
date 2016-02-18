@@ -25,7 +25,7 @@ public class PlacesService {
     private static final String OUT_JSON = "/json";
 
     // KEY TFGDiego
-  private static final String API_KEY = "AIzaSyDwnYqIM4r8BJ0iXYYCWdAwtS_laXMRM38";
+//  private static final String API_KEY = "AIzaSyDwnYqIM4r8BJ0iXYYCWdAwtS_laXMRM38";
     // KEY TFGDiego 2
 //    private static final String API_KEY = "AIzaSyB0MJiB8oSOJZSwgAYIelhLzf8grvcZDBI";
     // KEY TFGDiego 3
@@ -43,7 +43,7 @@ public class PlacesService {
     // KEY TFGDiego 9
 //    private static final String API_KEY = "AIzaSyAnHGQP9_giFPes2arPbjWMuMTlw1dHuXc";
     // KEY TFGDiego 10
-//    private static final String API_KEY = "AIzaSyDr94a5pt5VsiKIdg2cYYlqssidWcIrdIo";
+    private static final String API_KEY = "AIzaSyDr94a5pt5VsiKIdg2cYYlqssidWcIrdIo";
 
 
     public static ArrayList<Place> autocomplete(String input) {
@@ -115,6 +115,8 @@ public class PlacesService {
             sb.append("&location=" + String.valueOf(lat) + "," + String.valueOf(lng));
             sb.append("&radius=" + String.valueOf(radius));
 
+            System.out.println(sb.toString());
+
             URL url = new URL(sb.toString());
             conn = (HttpURLConnection) url.openConnection();
             InputStreamReader in = new InputStreamReader(conn.getInputStream());
@@ -158,8 +160,7 @@ public class PlacesService {
                 place.latitude = predsJsonArray.getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
                 //longitude
                 place.longitude = predsJsonArray.getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
-                //reference
-                place.reference = predsJsonArray.getJSONObject(i).getString("reference");
+
                 resultList.add(place);
             }
         } catch (JSONException e) {

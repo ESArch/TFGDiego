@@ -1,5 +1,5 @@
 import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 
 
 import java.io.*;
@@ -63,18 +63,13 @@ public class ETLTwitter {
             } else if (name.equals("coordinates")) {
                 readCoordinates(reader, tweet);
             } else if (name.equals("entities")) {
-                readHashTags(reader, tweet);
+                readEntities(reader, tweet);
             } else if (name.equals("created_at")) {
                 reader.beginObject();
                 reader.nextName();
                 long createdAt = reader.nextLong();
                 tweet.timestamp = createdAt;
                 reader.endObject();
-            }else if (name.equals("lang")) {
-                if(reader.peek() != JsonToken.NULL)
-                    tweet.lang = reader.nextString();
-                else
-                    tweet.lang = "und";
             } else {
                 reader.skipValue();
             }
@@ -83,6 +78,9 @@ public class ETLTwitter {
 
         DBLoader.connect();
         DBLoader.insertToDB(tweet);
+
+//        System.out.println(tweet);
+
         reader.endObject();
         return tweet;
     }
@@ -129,28 +127,52 @@ public class ETLTwitter {
         reader.endObject();
     }
 
-    public static void readHashTags(JsonReader reader, Tweet tweet) throws IOException {
+    public static void readEntities(JsonReader reader, Tweet tweet) throws IOException {
         reader.beginObject();
         while(reader.hasNext()){
             String name = reader.nextName();
             if(name.equals("hashtags")) {
-                reader.beginArray();
-                while(reader.hasNext()){
-                    reader.beginObject();
-                    while(reader.hasNext()){
-                        if(reader.nextName().equals("text")){
-                            tweet.hashTags.add(reader.nextString());
-                        } else {
-                            reader.skipValue();
-                        }
-                    }
-                    reader.endObject();
-                }
-                reader.endArray();
+                readHashTags(reader, tweet);
+            } else if( name.equals("media")) {
+                readMedia(reader, tweet);
             } else {
                 reader.skipValue();
             }
         }
         reader.endObject();
     }
+
+    private static void readMedia(JsonReader reader, Tweet tweet) throws IOException{
+        reader.beginArray();
+        while(reader.hasNext()){
+            reader.beginObject();
+            while(reader.hasNext()){
+                if(reader.nextName().equals("media_url")){
+                    tweet.media = reader.nextString();
+                } else {
+                    reader.skipValue();
+                }
+            }
+            reader.endObject();
+        }
+        reader.endArray();
+    }
+
+    private static void readHashTags(JsonReader reader, Tweet tweet) throws IOException{
+        reader.beginArray();
+        while(reader.hasNext()){
+            reader.beginObject();
+            while(reader.hasNext()){
+                if(reader.nextName().equals("text")){
+                    tweet.hashTags.add(reader.nextString());
+                } else {
+                    reader.skipValue();
+                }
+            }
+            reader.endObject();
+        }
+        reader.endArray();
+    }
+
+
 }

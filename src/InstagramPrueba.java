@@ -118,7 +118,7 @@ public class InstagramPrueba {
     }
 
     public static void searchPlaces(Instagram instagram, double latitude, double longitude) throws Exception{
-        int[] distancia = {1, 10, 25, 50};
+        int[] distancia = {10, 15, 20, 25};
 
         MediaFeed feed = instagram.searchMedia(latitude, longitude, null, null, 5000);
         List<MediaFeedData> feeds = feed.getData();

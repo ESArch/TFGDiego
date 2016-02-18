@@ -16,7 +16,8 @@ public class DBLoader {
 //        filterByDays(15);
 //        cleanUnusedHashTags();
 
-          tagTypeOfPlace();
+//          tagTypeOfPlace();
+        getPlacesFromTweets();
     }
 
     public static void connect(){
@@ -66,8 +67,8 @@ public class DBLoader {
             statement = connection.createStatement();
 
             //Insert usuario
-            sql = "INSERT INTO usuario (usu_id, usu_idioma)"
-                    + "VALUES ('" + tweet.user.id + "','" + tweet.user.lang + "');";
+            sql = "INSERT INTO usuario (usu_id, usu_idioma, usu_filtrado)"
+                    + "VALUES ('" + tweet.user.id + "','" + tweet.user.lang +  "', false);";
             statement.executeUpdate(sql);
             statement.close();
 //            connection.commit();
@@ -85,10 +86,15 @@ public class DBLoader {
         try {
             statement = connection.createStatement();
 
+            if(tweet.media != null)
             //Insert tweet
-            sql = "INSERT INTO tweet (twe_id, twe_texto, twe_usuario, twe_coordenadas, twe_fecha_creacion, twe_hora_creacion, twe_idioma)"
+                sql = "INSERT INTO tweet (twe_id, twe_texto, twe_usuario, twe_coordenadas, twe_fecha_creacion, twe_hora_creacion, twe_idioma, twe_localizado, twe_media)"
                     + "VALUES ('" + tweet.id + "','" + tweet.text + "','" + tweet.user.id + "',ST_GeomFromText('POINT(" +tweet.latitude + " " +tweet.longitude + ")', 4326), '"
-                    + tweet.getDate() + "', '" + tweet.getTime() + "', '" + tweet.lang +"');";
+                    + tweet.getDate() + "', '" + tweet.getTime() + "', '" + tweet.lang +"', false, '" + tweet.media + "');";
+            else
+                sql = "INSERT INTO tweet (twe_id, twe_texto, twe_usuario, twe_coordenadas, twe_fecha_creacion, twe_hora_creacion, twe_idioma, twe_localizado)"
+                        + "VALUES ('" + tweet.id + "','" + tweet.text + "','" + tweet.user.id + "',ST_GeomFromText('POINT(" +tweet.latitude + " " +tweet.longitude + ")', 4326), '"
+                        + tweet.getDate() + "', '" + tweet.getTime() + "', '" + tweet.lang +"', false);";
             statement.executeUpdate(sql);
             statement.close();
 //            connection.commit();
@@ -159,7 +165,6 @@ public class DBLoader {
     public static void filterUsersByTweets(int minTweets) {
         Statement statement = null;
         String sql = "";
-        ResultSet rs = null;
 
         if (connection == null)
             getConnection();
@@ -167,24 +172,10 @@ public class DBLoader {
         try {
             statement = connection.createStatement();
 
-            sql = "SELECT twe_usuario FROM tweet GROUP BY twe_usuario HAVING COUNT(*) < "  + minTweets +";";
-            rs = statement.executeQuery(sql);
-
-            int rowCount = 0;
-
-            statement = connection.createStatement();
-            while(rs.next()){
-                String userID = rs.getString("twe_usuario");
-
-                sql = "DELETE FROM usuario WHERE usu_id = '" + userID + "';";
-                statement.executeUpdate(sql);
-
-                rowCount ++;
-            }
-
-            System.out.println(rowCount);
-            statement.close();
-
+            sql = "UPDATE usuario " +
+                    "SET usu_filtrado = true " +
+                    "WHERE usu_id IN (SELECT twe_usuario FROM tweet GROUP BY twe_usuario HAVING COUNT(*) < " + minTweets + ");";
+            statement.executeUpdate(sql);
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.err.println(sql);
@@ -275,16 +266,10 @@ public class DBLoader {
 
         try {
             statement = connection.createStatement();
-
-            sql = "SELECT usu_id, usu_fecha_max - usu_fecha_min + 1 AS dif FROM usuario WHERE (usu_fecha_max - usu_fecha_min + 1) > " + minDays +";";
-            rs = statement.executeQuery(sql);
-
-            statement = connection.createStatement();
-            while(rs.next()){
-                sql = "DELETE FROM usuario WHERE usu_id = '" + rs.getString("usu_id") + "';";
-                statement.executeUpdate(sql);
-            }
-
+            sql = "UPDATE usuario " +
+                    "SET usu_filtrado = true " +
+                    "WHERE usu_id IN (SELECT usu_id FROM usuario WHERE (usu_fecha_max - usu_fecha_min + 1) > " + minDays +");";
+            statement.executeUpdate(sql);
             statement.close();
 
         }catch (SQLException e){
@@ -357,6 +342,71 @@ public class DBLoader {
         }
 
         return  terminado;
+    }
+
+    public static boolean getPlacesFromTweets() {
+
+        Statement statement = null;
+        ResultSet rs = null;
+        String sql = "SELECT twe_id, ST_AsLatLonText(twe_coordenadas, 'D.DDDDDD') as coordenadas " +
+                "FROM tweet " +
+                "WHERE twe_usuario IN (SELECT usu_id FROM usuario WHERE usu_filtrado = false) " +
+                "AND twe_localizado = false LIMIT 10;";
+
+        boolean terminado = true;
+
+        if(connection == null)
+            getConnection();
+
+        try{
+            statement = connection.createStatement();
+            rs = statement.executeQuery(sql);
+
+
+            while (rs.next()){
+                String tweetID = rs.getString("twe_id");
+                String coordenadas = rs.getString("coordenadas");
+                System.out.println(coordenadas);
+
+                terminado = searchPlaces(coordenadas);
+
+                if(!terminado){
+                    System.out.println("Límite de Google Places superado");
+                    break;
+                }
+
+//                statement = connection.createStatement();
+//
+//                sql = "UPDATE tweet " +
+//                        "SET twe_localizado = true " +
+//                        "WHERE twe_id = '" + tweetID + "';";
+//                statement.executeUpdate(sql);
+//                statement.close();
+            }
+
+        }catch (SQLException e){
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.err.println(sql);
+        }
+
+        return  terminado;
+    }
+
+    private static boolean searchPlaces(String coordenadas) {
+        String [] latLong = coordenadas.split(" ");
+        Double latitude = Double.parseDouble(latLong[1]);
+        Double longitude = Double.parseDouble(latLong[0]);
+
+        ArrayList<Place> places = PlacesService.search("", latitude, longitude, 10);
+        if(places.size() == 0) return false;
+
+        for(Place place : places){
+            place.setTypeOfPlace();
+            if(place.ofInterest)
+                System.out.println(place);
+        }
+
+        return true;
     }
 
     private static String getTypeOfPlace(String coordenadas) {

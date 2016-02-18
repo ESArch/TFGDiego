@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class Tweet {
 
-    String text, id, lang;
+    String text, id, lang, media;
     Double latitude, longitude;
     TwitterUser user;
     ArrayList<String> hashTags;
@@ -21,6 +21,7 @@ public class Tweet {
         return "id: " + id + " with text: " + text +
                 "\nCoordinates: " + latitude + ", " + longitude +
                 "\nHashtags: " + hashTags +
+                "\nMedia: " + media +
                 "\nDate: " + getDate() + " " + getTime() +
                 "\nUsuario: " + user.toString();
     }
