@@ -47,7 +47,7 @@ public class Place {
             typeOfPlace =  "transport";
         else if(types.contains("amusement_park") || types.contains("aquarium") || types.contains("bowling_alley") || types.contains("casino")
                 || types.contains("movie_theater") || types.contains("park") || types.contains("spa") || types.contains("stadium") || types.contains("zoo"))
-            typeOfPlace =  "ocio";
+            typeOfPlace =  "leisure";
         else if(types.contains("department_store") || types.contains("shopping_mall") || types.contains("clothing_store") || types.contains("electronics_store") || types.contains("shoe_store") || types.contains("jewelry_store"))
             typeOfPlace =  "shopping";
         else

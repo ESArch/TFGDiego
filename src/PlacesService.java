@@ -43,7 +43,17 @@ public class PlacesService {
     // KEY TFGDiego 9
 //    private static final String API_KEY = "AIzaSyAnHGQP9_giFPes2arPbjWMuMTlw1dHuXc";
     // KEY TFGDiego 10
-    private static final String API_KEY = "AIzaSyDr94a5pt5VsiKIdg2cYYlqssidWcIrdIo";
+//    private static final String API_KEY = "AIzaSyDr94a5pt5VsiKIdg2cYYlqssidWcIrdIo";
+
+    private static final String[] keys = {"AIzaSyDwnYqIM4r8BJ0iXYYCWdAwtS_laXMRM38", "AIzaSyB0MJiB8oSOJZSwgAYIelhLzf8grvcZDBI", "AIzaSyAG_UeWcd0gs0x6yfEHrBMlMtsMAPNiZYI", "AIzaSyDT4Zuo42oTn61TqsuTTVxZXXD1CqVhKlU", "AIzaSyASLxaQalnk-aHtC6YS0_xAKFwbE9Xv-VM",
+            "AIzaSyC0JdK_ZvFzqO8FT7T2P9ZYF-RmQZ-1DQs", "AIzaSyDO2m62Zu9i7TZC2gDDzY2PPI-NYdq9fSg", "AIzaSyBjFfOSaD8oD1xwWNYxG65meRLz36y7_74", "AIzaSyAnHGQP9_giFPes2arPbjWMuMTlw1dHuXc", "AIzaSyDr94a5pt5VsiKIdg2cYYlqssidWcIrdIo"};
+    private static int keyNumber = 0;
+
+    private static String API_KEY = "AIzaSyDwnYqIM4r8BJ0iXYYCWdAwtS_laXMRM38";
+
+    public static void nextKey(){
+        API_KEY = keys[++keyNumber];
+    }
 
 
     public static ArrayList<Place> autocomplete(String input) {
@@ -111,7 +121,7 @@ public class PlacesService {
             sb.append(OUT_JSON);
             sb.append("?sensor=false");
             sb.append("&key=" + API_KEY);
-            sb.append("&keyword=" + URLEncoder.encode(keyword, "utf8"));
+//            sb.append("&keyword=" + URLEncoder.encode(keyword, "utf8"));
             sb.append("&location=" + String.valueOf(lat) + "," + String.valueOf(lng));
             sb.append("&radius=" + String.valueOf(radius));
 
