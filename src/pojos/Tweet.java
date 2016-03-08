@@ -1,3 +1,5 @@
+package pojos;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,11 +9,11 @@ import java.util.Date;
  */
 public class Tweet {
 
-    String text, id, lang, media;
-    Double latitude, longitude;
-    TwitterUser user;
-    ArrayList<String> hashTags;
-    long timestamp;
+    public String text, id, lang, media;
+    public double latitude, longitude;
+    public TwitterUser user;
+    public ArrayList<String> hashTags;
+    public long timestamp;
 
     public Tweet(){
         hashTags = new ArrayList<>();

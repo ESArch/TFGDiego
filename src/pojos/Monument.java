@@ -1,3 +1,5 @@
+package pojos;
+
 /**
  * Created by Arch on 2/21/2016.
  */

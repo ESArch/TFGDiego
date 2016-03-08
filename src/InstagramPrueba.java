@@ -4,17 +4,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
-import javafx.beans.property.StringProperty;
 import org.jinstagram.Instagram;
 import org.jinstagram.auth.InstagramAuthService;
 import org.jinstagram.auth.model.Token;
 import org.jinstagram.auth.model.Verifier;
 import org.jinstagram.auth.oauth.InstagramService;
-import org.jinstagram.entity.common.Pagination;
-import org.jinstagram.entity.locations.LocationInfo;
-import org.jinstagram.entity.users.basicinfo.UserInfo;
 import org.jinstagram.entity.users.feed.MediaFeed;
 import org.jinstagram.entity.users.feed.MediaFeedData;
+import pojos.Place;
 
 public class InstagramPrueba {
     private static final Token EMPTY_TOKEN = null;

@@ -1,3 +1,5 @@
+package pojos;
+
 import javafx.beans.property.StringProperty;
 
 import java.util.ArrayList;
@@ -6,13 +8,13 @@ import java.util.ArrayList;
  * Created by Arch on 1/29/2016.
  */
 public class Place {
-    String name, place_id, typeOfPlace;
+    public String name, place_id, typeOfPlace;
 
-    double latitude, longitude;
+    public double latitude, longitude;
 
-    boolean ofInterest;
+    public boolean ofInterest;
 
-    ArrayList<String> types;
+    public ArrayList<String> types;
 
     public Place (){
         ofInterest = true;

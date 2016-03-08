@@ -1,5 +1,6 @@
 import com.google.gson.stream.JsonReader;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+import pojos.Tweet;
+import pojos.TwitterUser;
 
 
 import java.io.*;
