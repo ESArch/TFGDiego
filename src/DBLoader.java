@@ -1,8 +1,5 @@
-import pojos.District;
-import pojos.Monument;
+import pojos.*;
 import catastro.accesoCatastro;
-import pojos.Place;
-import pojos.Tweet;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -42,12 +39,13 @@ public class DBLoader {
 //        etiquetarPorProximidad(10);
 
 
-//        desetiquetar();
+        desetiquetar();
 //        etiquetarPorMonumentos(50);
 //        etiquetarPorParcelas(10);
+        etiquetarPorPOIs(15);
 ////        etiquetarPorPrioridad(50);
 ////        etiquetarPorProximidad(15);
-//        etiquetarPorPrioridadYDistancia();
+        etiquetarPorPrioridadYDistancia();
 
 
 
@@ -60,7 +58,7 @@ public class DBLoader {
 //        printParcelas("parcelas");
 //        printPerfilZonas("perfilZonas");
 //        printRecorridos("recorridos");
-        printOcupacionDistritos("ocupacionDistritos");
+//        printOcupacionDistritos("ocupacionDistritos");
 
     }
 
@@ -182,6 +180,25 @@ public class DBLoader {
             statement.executeUpdate(sql);
             statement.close();
 //            connection.commit();
+
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.err.println(sql);
+        }
+    }
+
+    public static void insertPOI(POI poi) {
+        Statement statement = null;
+        String sql = "";
+
+        try {
+            statement = connection.createStatement();
+
+            sql = "INSERT INTO punto_interes (poi_nombre, poi_tipo_lugar, poi_poligono)"
+                    + " VALUES ('" + poi.name.replaceAll("'", "''") + "','" + poi.typeOfPlace + "', ST_MULTI('" + poi.geom + "')); ";
+
+            statement.executeUpdate(sql);
+            statement.close();
 
         } catch (SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -588,6 +605,48 @@ public class DBLoader {
                     String mon_codigo = rs2.getString("mon_codigo");
                     String mon_tipo_lugar = rs2.getString("mon_tipo_lugar");
                     sql2 = "UPDATE tweet SET twe_monumento = '" + mon_codigo + "', twe_tipo_lugar = '" + mon_tipo_lugar + "' WHERE twe_id = '" + tweetID + "';";
+                    statement = connection.createStatement();
+                    statement.executeUpdate(sql2);
+                    statement.close();
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.err.println(sql);
+        }
+    }
+
+    public static void etiquetarPorPOIs(int distancia) {
+        Statement statement = null;
+        String sql = "SELECT twe_id FROM tweet, usuario WHERE twe_usuario = usu_id AND usu_filtrado = false AND twe_lugar IS NULL";
+        ResultSet rs1, rs2 = null;
+
+        if (connection == null) {
+            getConnection();
+        }
+
+        try {
+            statement = connection.createStatement();
+            rs1 = statement.executeQuery(sql);
+
+            while (rs1.next()) {
+                String tweetID = rs1.getString("twe_id");
+                sql = "SELECT poi_id, poi_tipo_lugar " +
+                        "FROM tweet, punto_interes " +
+                        "WHERE ST_DWithin(poi_poligono::geography, twe_coordenadas::geography, " + distancia + ") " +
+                        "AND twe_id = '" + tweetID + "'" +
+                        "ORDER BY ST_DISTANCE(ST_Centroid(poi_poligono), twe_coordenadas) ASC " +
+                        "LIMIT 1;";
+
+                statement = connection.createStatement();
+                rs2 = statement.executeQuery(sql);
+                String sql2 = "";
+
+                if (rs2.next()) {
+                    int poi_id = rs2.getInt("poi_id");
+                    String poi_tipo_lugar = rs2.getString("poi_tipo_lugar");
+                    sql2 = "UPDATE tweet SET twe_punto_interes = " + poi_id + ", twe_tipo_lugar = '" + poi_tipo_lugar + "' WHERE twe_id = '" + tweetID + "';";
                     statement = connection.createStatement();
                     statement.executeUpdate(sql2);
                     statement.close();
@@ -1037,7 +1096,7 @@ public class DBLoader {
     public static void printParcelas(String fileName) {
         Statement statement = null;
         ResultSet rs = null;
-        String sql = "SELECT mon_nombre, ST_AsGeoJSON(mon_parcela) as geo FROM monumento;";
+        String sql = "SELECT mon_nombre, mon_tipo_lugar, ST_AsText(mon_parcela) as geo FROM monumento;";
 
         if (connection == null)
             connect();
@@ -1050,8 +1109,9 @@ public class DBLoader {
 
             while (rs.next()) {
                 String nombre = rs.getString("mon_nombre");
+                String tipo = rs.getString("mon_tipo_lugar");
                 String json = rs.getString("geo");
-                writer.println(nombre + ";" + json);
+                writer.println(nombre + ";" + tipo + ";" + json);
             }
 
             statement.close();
