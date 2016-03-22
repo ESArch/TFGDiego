@@ -39,13 +39,14 @@ public class DBLoader {
 //        etiquetarPorProximidad(10);
 
 
-        desetiquetar();
+//        desetiquetarTweets();
 //        etiquetarPorMonumentos(50);
 //        etiquetarPorParcelas(10);
-        etiquetarPorPOIs(15);
+//        etiquetarPorPOIs(15);
 ////        etiquetarPorPrioridad(50);
 ////        etiquetarPorProximidad(15);
-        etiquetarPorPrioridadYDistancia();
+//        etiquetarPorPrioridadYDistancia();
+        etiquetarTuristas();
 
 
 
@@ -532,6 +533,75 @@ public class DBLoader {
         return true;
     }
 
+    public static void etiquetarTuristas(){
+        etiquetarTuristasPorMonumentosVisitados(3);
+        etiquetarTuristasAlojadosHotel();
+        etiquetarTuristasPlayaVisitada();
+    }
+
+    private static void etiquetarTuristasPorMonumentosVisitados(int minimo){
+        Statement statement = null;
+        String sql = "UPDATE usuario\n" +
+                "SET usu_turista = true\n" +
+                "WHERE usu_id IN (SELECT usu_id\n" +
+                "FROM usuario\n" +
+                "WHERE NOT usu_filtrado \n" +
+                "AND " + minimo + "<= (SELECT COUNT(DISTINCT twe_punto_interes) FROM tweet WHERE twe_usuario = usu_id AND twe_tipo_lugar = 'monument'));";
+
+        if (connection == null)
+            getConnection();
+
+        try {
+            statement = connection.createStatement();
+            statement.executeUpdate(sql);
+            statement.close();
+
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.err.println(sql);
+        }
+    }
+
+    private static void etiquetarTuristasAlojadosHotel(){
+        Statement statement = null;
+        String sql = "UPDATE usuario\n" +
+                "SET usu_turista = true\n" +
+                "WHERE usu_id IN (SELECT DISTINCT twe_usuario FROM tweet WHERE twe_tipo_lugar = 'hotel');";
+
+        if (connection == null)
+            getConnection();
+
+        try {
+            statement = connection.createStatement();
+            statement.executeUpdate(sql);
+            statement.close();
+
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.err.println(sql);
+        }
+    }
+
+    private static void etiquetarTuristasPlayaVisitada(){
+        Statement statement = null;
+        String sql = "UPDATE usuario\n" +
+                "SET usu_turista = true\n" +
+                "WHERE usu_id IN (SELECT DISTINCT twe_usuario FROM tweet WHERE twe_tipo_lugar = 'beach');";
+
+        if (connection == null)
+            getConnection();
+
+        try {
+            statement = connection.createStatement();
+            statement.executeUpdate(sql);
+            statement.close();
+
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.err.println(sql);
+        }
+    }
+
 
     public static void etiquetarPorMonumentos(int distancia) {
         Statement statement = null;
@@ -785,7 +855,7 @@ public class DBLoader {
             return places.get("undefined");
     }
 
-    public static void desetiquetar() {
+    public static void desetiquetarTweets() {
         Statement statement = null;
         String sql = "UPDATE tweet SET twe_lugar = null, twe_monumento = null, twe_tipo_lugar = null;";
 
@@ -802,6 +872,24 @@ public class DBLoader {
             System.err.println(sql);
         }
 
+    }
+
+    public static void desetiquetarUsuarios() {
+        Statement statement = null;
+        String sql = "UPDATE usuario SET usu_turista = false";
+
+        if (connection == null)
+            getConnection();
+
+        try {
+            statement = connection.createStatement();
+            statement.executeUpdate(sql);
+            statement.close();
+
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.err.println(sql);
+        }
     }
 
 
@@ -866,19 +954,19 @@ public class DBLoader {
 
         Place place = null;
 
-        place = searchPlaceByType(tweetID, "museum", 25);
+//        place = searchPlaceByType(tweetID, "museum", 25);
+//        if (place != null) return place;
+//        place = searchPlaceByType(tweetID, "monument", 50);
+//        if (place != null) return place;
+        place = searchPlaceByType(tweetID, "night", 25);
         if (place != null) return place;
-        place = searchPlaceByType(tweetID, "monument", 50);
+        place = searchPlaceByType(tweetID, "hotel", 35);
         if (place != null) return place;
-        place = searchPlaceByType(tweetID, "night", 15);
+        place = searchPlaceByType(tweetID, "gastronomy", 25);
         if (place != null) return place;
-        place = searchPlaceByType(tweetID, "hotel", 25);
-        if (place != null) return place;
-        place = searchPlaceByType(tweetID, "gastronomy", 15);
-        if (place != null) return place;
-        place = searchPlaceByType(tweetID, "leisure", 50);
-        if (place != null) return place;
-        place = searchPlaceByType(tweetID, "transport", 15);
+        place = searchPlaceByType(tweetID, "leisure", 25);
+//        if (place != null) return place;
+//        place = searchPlaceByType(tweetID, "transport", 15);
         if (place != null) return place;
         place = searchPlaceByType(tweetID, "shopping", 15);
         if (place != null) return place;
