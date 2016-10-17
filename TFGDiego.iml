@@ -40,5 +40,9 @@
         <jarDirectory url="file://$USER_HOME$/Downloads/yelp-api-master/yelp-api-master/v2/java/lib" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="jcommander" level="project" />
+    <orderEntry type="library" name="jdom-2.0.0" level="project" />
+    <orderEntry type="library" name="json-simple-1.1" level="project" />
+    <orderEntry type="library" name="scribe-1.3.2" level="project" />
   </component>
 </module>

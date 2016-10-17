@@ -4,8 +4,11 @@ import pojos.TwitterUser;
 
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 
 /**
@@ -17,6 +20,20 @@ public class ETLTwitter {
 
     public static void main(String[] args) throws Exception {
         procesarGSON("valencia.json");
+
+        //print the file
+        /*
+        String fileName = "valencia.json";
+
+        //read file into stream, try-with-resources
+        try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
+
+            stream.forEach(System.out::println);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        */
     }
 
     public static void procesarGSON(String fileName) throws IOException{
@@ -26,6 +43,7 @@ public class ETLTwitter {
     public static List<Tweet> readJsonStream(InputStream in) throws IOException {
         JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
         reader.setLenient(true);
+        System.out.println();
         try {
             return readTweetsArray(reader);
         } finally {
@@ -39,7 +57,7 @@ public class ETLTwitter {
         int i = 0;
         while (reader.hasNext() && i < 20) {
             messages.add(readTweet(reader));
-//            i++;
+            i++;
         }
         return messages;
     }
@@ -77,10 +95,10 @@ public class ETLTwitter {
 
         }
 
-        DBLoader.connect();
-        DBLoader.insertToDB(tweet);
+//        DBLoader.connect();
+//        DBLoader.insertToDB(tweet);
 
-//        System.out.println(tweet);
+        System.out.println(tweet);
 
         reader.endObject();
         return tweet;

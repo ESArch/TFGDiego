@@ -46,7 +46,7 @@ public class DBLoader {
 ////        etiquetarPorPrioridad(50);
 ////        etiquetarPorProximidad(15);
 //        etiquetarPorPrioridadYDistancia();
-        etiquetarTuristas();
+//        etiquetarTuristas();
 
 
 
@@ -54,11 +54,11 @@ public class DBLoader {
 //        buffPoints();
 
 
-//        extraerRecorridos();
+        extraerRecorridos();
 
 //        printParcelas("parcelas");
 //        printPerfilZonas("perfilZonas");
-//        printRecorridos("recorridos");
+        printRecorridos("recorridos");
 //        printOcupacionDistritos("ocupacionDistritos");
 
     }
@@ -1101,7 +1101,7 @@ public class DBLoader {
 
     public static void extraerRecorridos() {
         Statement statement = null;
-        String sql = "SELECT twe_usuario, twe_fecha_creacion FROM tweet GROUP BY twe_usuario, twe_fecha_creacion HAVING COUNT(*) > 25";
+        String sql = "SELECT twe_usuario, twe_fecha_creacion FROM tweet GROUP BY twe_usuario, twe_fecha_creacion HAVING COUNT(*) > 5";
         ResultSet rs1, rs2 = null;
 
         if (connection == null) {
@@ -1215,6 +1215,7 @@ public class DBLoader {
             e.printStackTrace();
         }
     }
+
 
     public static void printPerfilZonas(String fileName) {
         Statement statement = null;
